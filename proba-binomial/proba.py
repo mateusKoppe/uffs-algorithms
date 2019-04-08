@@ -17,6 +17,7 @@ def binomial_acc(n, x, p):
     return acc
 
 def main():
+    print("======== Calculo de Coeficiente Binomial ========")
     n = int(input("Informe n: "))
     x = int(input("Informe x: "))
     p = float(input("Informe o valor absoluto de p: "))
