@@ -27,7 +27,6 @@ def main():
 
     proba = 0
     if (acc):
-        print("to true")
         proba = binomial_acc(n, x, p)
     else: 
         proba = binomial(n, x, p)
