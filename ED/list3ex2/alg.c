@@ -9,7 +9,7 @@ int main(void) {
   int lines_amount = 1, actual_line = 0;
 
   p_msg = malloc(0);
-  p_lines = (char **)  malloc(sizeof(int));
+  p_lines = (char **) malloc(sizeof(char**));
   p_lines[0] = p_msg;
   p_msg_size = (int *) malloc(sizeof(int*));
   p_msg_size[0] = 0;
@@ -30,9 +30,8 @@ int main(void) {
     }
   }
 
-  printf("\n");
   for(i = 0; i < lines_amount; i++){
-    printf("%s", p_lines[i]);
+    printf(">%s<", p_lines[i]);
     printf("\n");
     free(p_lines[i]);
   }
