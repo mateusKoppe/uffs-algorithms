@@ -3,40 +3,37 @@
 #include <string.h>
 
 int main(void) {
-  char letter, *p_msg, **p_lines;
-  int *p_msg_size;
-  int i = 0;
-  int lines_amount = 1, actual_line = 0;
+  char *msg, **lines, letter;
+  int msg_size = 0, lines_size = 1;
+  int i;
 
-  p_msg = malloc(0);
-  p_lines = (char **) malloc(sizeof(char**));
-  p_lines[0] = p_msg;
-  p_msg_size = (int *) malloc(sizeof(int*));
-  p_msg_size[0] = 0;
+  msg = (char *) malloc(0);
+  lines = (char **) malloc(sizeof(char**));
+  lines[0] = msg;
+
   while (scanf("%c", &letter) != EOF) {
     if (!strncmp(&letter, "\n", 1)) {
-      lines_amount++;
-      actual_line++;
-      p_msg = malloc(0);
-      p_msg_size = (int *) realloc(p_msg_size, lines_amount * sizeof(int*));
-      p_msg_size[actual_line] = 0;
-      p_lines = (char **) realloc(p_lines, lines_amount * sizeof(int*));
-      p_lines[actual_line] = &(*p_msg);
+      if (msg_size > 0) {
+        msg_size = 0;
+        lines_size++;
+        msg = (char *) malloc(0);
+        lines = realloc(lines, sizeof(char**) * lines_size);
+        lines[lines_size -1] = msg;
+      }
     } else {
-      p_msg_size[actual_line]++;
-      p_msg = realloc(p_msg, p_msg_size[actual_line] * sizeof(char*));
-      p_lines[actual_line] = p_msg;
-      p_msg[p_msg_size[actual_line] - 1] = letter;
+      msg_size++;
+      msg = realloc(msg, sizeof (char*) * msg_size);
+      msg[msg_size - 1] = letter;
+      lines[lines_size - 1] = msg;
     }
   }
 
-  for(i = 0; i < lines_amount; i++){
-    printf(">%s<", p_lines[i]);
-    printf("\n");
-    free(p_lines[i]);
+  printf("\n");
+  for (i = 0; i < lines_size; i++) {
+    printf(">%s<\n", lines[i]);
+    free(lines[i]);
   }
+  free(lines);
 
-  free(p_msg_size);
-  free(p_lines);
+  return 0;
 }
-
