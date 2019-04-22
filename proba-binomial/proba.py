@@ -17,23 +17,28 @@ def binomial_acc(n, x, p):
     return acc
 
 def main():
+    calc_interface()
+
+def calc_interface():
     print("======== Calculo de Coeficiente Binomial ========")
     n = int(input("Informe n: "))
     x = int(input("Informe x: "))
     p = float(input("Informe o valor absoluto de p: "))
     
-    acc = False
-    if (input("Acumulativo: [S/n] ") != "n"):
-        acc = True
-
-    proba = 0
-    if (acc):
-        proba = binomial_acc(n, x, p)
-    else: 
-        proba = binomial(n, x, p)
+    proba_acc = binomial_acc(n, x, p)
+    proba = binomial(n, x, p)
 
 
-    print("O probabilidade é {:.4f}".format(proba))
+    print("O probabilidade simples é {:.4f}".format(proba))
+    print("O probabilidade acumulada é {:.4f}".format(proba_acc))
+    menu_interface()
 
+def menu_interface():
+    print("======== Calculo de Coeficiente Binomial ========")
+    print("[1] - Calcular novamente")
+    print("[2] - Sair")
+    choice = int(input())
+    if (choice == 1):
+        calc_interface()
 
 main()
