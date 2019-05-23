@@ -10,10 +10,10 @@ typedef struct {
   node *head;
 } sllist;
 
-void sllist_init (sllist *list) 
+void sllist_init (sllist *list);
 
-int _node sllist_insert(sllist *list, int key)
+int sllist_insert(sllist *list, int key);
 
-void _node sllist_erase(sllist *list, int key)
+void sllist_erase(sllist *list, int key);
 
-void _node sllist_free(sllist *list)
+void sllist_free(sllist *list);
