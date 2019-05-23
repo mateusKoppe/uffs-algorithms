@@ -33,3 +33,11 @@ void sllist_free(sllist *list) {
     free(nod);
   }
 }
+
+void sllist_print(sllist *list) {
+  node* nod;
+  for(nod = list->head; !nod; nod = nod->next) {
+    printf("%s%d", nod == list->head ? "" : " ", nod->key);
+  }
+1}
+

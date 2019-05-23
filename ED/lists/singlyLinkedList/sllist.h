@@ -17,3 +17,5 @@ int sllist_insert(sllist *list, int key);
 void sllist_erase(sllist *list, int key);
 
 void sllist_free(sllist *list);
+
+void sllist_print(sllist *list);
