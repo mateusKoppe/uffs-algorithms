@@ -1,6 +1,9 @@
-All: main
+All: start
 
-main: main.o sllist.o
+start: compile
+	./main
+
+compile: main.o sllist.o
 	gcc main.o sllist.o -o main
 
 .SUFFIXES: .o .c
