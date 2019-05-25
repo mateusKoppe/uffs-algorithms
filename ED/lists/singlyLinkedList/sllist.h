@@ -1,4 +1,4 @@
-#ifdef _SLLIST
+#ifndef _SLLIST
 #define _SLLIST
 
 typedef struct _node {
@@ -19,3 +19,4 @@ void sllist_erase(sllist *list, int key);
 void sllist_free(sllist *list);
 
 void sllist_print(sllist *list);
+#endif
