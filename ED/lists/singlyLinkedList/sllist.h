@@ -1,10 +1,6 @@
+#include "node.h"
 #ifndef _SLLIST
 #define _SLLIST
-
-typedef struct _node {
-  int key;
-  struct _node *next;
-} node;
 
 typedef struct {
   node *head;

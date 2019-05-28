@@ -3,8 +3,8 @@ All: start
 start: compile
 	./main
 
-compile: main.o sllist.o
-	gcc main.o sllist.o -o main
+compile: main.o sllist.o stack.o
+	gcc main.o sllist.o stack.o -o main
 
 .SUFFIXES: .o .c
 
