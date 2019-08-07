@@ -2,12 +2,17 @@
 
 void bubble_sort(int number_list[], int length){
   for (int i = length; i > 0; i--) {
+    int swapped = 0;
     for(int j = 0; j < i; j++) {
       if (number_list[j] > number_list[j+1]) {
         int aux = number_list[j+1];
         number_list[j+1] = number_list[j];
         number_list[j] = aux;
+        swapped = 1;
       }
+    }
+    if (!swapped) {
+      return;
     }
   }
 }
