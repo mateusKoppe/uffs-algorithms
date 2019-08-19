@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "./list.h"
+#include "./listsort.h"
 
 void view ();
 void menu ();
@@ -25,7 +26,8 @@ void view () {
   printf("[2] - Remove number\n");
   printf("[3] - Show list\n");
   printf("[4] - Show list size\n");
-  printf("[5] - Quit\n");
+  printf("[5] - Order list\n");
+  printf("[6] - Quit\n");
   menu();
 }
 
@@ -74,6 +76,10 @@ void menu () {
       view_show_list_size();
       break;
     case 5:
+      listsort_bubble_sort(&number_list);
+      view();
+      break;
+    case 6:
       list_free(&number_list);
       break;
     default:
