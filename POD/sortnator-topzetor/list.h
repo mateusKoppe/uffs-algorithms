@@ -9,8 +9,10 @@ typedef struct _list_node {
 
 typedef struct {
   list_node *head;
+  int size; 
 } list;
 
+void list_construct (list *l_list);
 list_node* list_get_node (list *l_list, int value);
 list_node* list_get_last_node (list *l_list);
 list_node* list_insert (list *l_list, int value);

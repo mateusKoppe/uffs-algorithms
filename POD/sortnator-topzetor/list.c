@@ -2,8 +2,13 @@
 #include <stdio.h>
 #include "./list.h"
 
+void list_construct (list *l_list) {
+  l_list->size = 0;
+  l_list->head = NULL;
+}
+
 list_node* list_get_node (list *l_list, int value) {
-  if (!l_list->head) return l_list->head;
+  if (!l_list->head) return NULL;
   list_node *fetch = l_list->head;
   while (fetch) {
     if (fetch->value == value) {
@@ -15,7 +20,7 @@ list_node* list_get_node (list *l_list, int value) {
 }
 
 list_node* list_get_last_node (list *l_list) {
-  if (!l_list->head) return l_list->head;
+  if (!l_list->head) return NULL;
   list_node *fetch = l_list->head;
   while(fetch->next) {
     fetch = fetch->next;
@@ -34,6 +39,7 @@ list_node* list_insert (list *l_list, int value) {
   } else {
     l_list->head = new_node;
   }
+  l_list->size++;
   return new_node;
 }
 
@@ -60,6 +66,7 @@ void list_remove (list *l_list, int value) {
   if (node->next) {
     node->next->prev = node->prev;
   }
+  l_list->size--;
   free(node);
 }
 

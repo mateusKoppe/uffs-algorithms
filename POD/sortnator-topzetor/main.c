@@ -13,6 +13,7 @@ int option;
 list number_list;
 
 int main () {
+  list_construct(&number_list);
   printf("- = = = = = = = == = = = = = = = -\n");
   printf("-       Sortnator Topzetor       -\n");
   printf("-      Just sort your stuff      -\n");
@@ -26,7 +27,7 @@ void view () {
   printf("[2] - Remove number\n");
   printf("[3] - Show list\n");
   printf("[4] - Show list size\n");
-  printf("[5] - Order list\n");
+  printf("[5] - Order (Bubble Sort)\n");
   printf("[6] - Quit\n");
   menu();
 }
@@ -58,6 +59,8 @@ void view_show_list () {
 }
 
 void view_show_list_size () {
+  printf("List size: %d\n", number_list.size);
+  view();
 }
 
 void menu () {
