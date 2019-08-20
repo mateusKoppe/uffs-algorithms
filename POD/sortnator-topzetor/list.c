@@ -16,7 +16,7 @@ list_node* list_get_node (list *l_list, int value) {
     }
     fetch = fetch->next;
   }
-  return fetch;
+  return NULL;
 }
 
 list_node* list_get_last_node (list *l_list) {
@@ -49,7 +49,6 @@ void list_print (list *l_list) {
     return;
   }
 
-  printf("List:\n");
   list_node *fetch = l_list->head;
   while (fetch) {
     printf("- %d\n", fetch->value);
@@ -57,17 +56,29 @@ void list_print (list *l_list) {
   }
 }
 
-void list_remove (list *l_list, int value) {
-  list_node *node = list_get_node(l_list, value);
-  if (!node) return;
-  if (node->prev) {
-    node->prev->next = node->next;
+int list_remove (list *l_list, int value) {
+  list_node *node;
+  int remove_count = 0;
+  while (node = list_get_node(l_list, value))
+  {
+    if (node->prev) {
+      node->prev->next = node->next;
+    }
+    if (node->next) {
+      node->next->prev = node->prev;
+    }
+    if (l_list->head == node) {
+      if (node->next) {
+        l_list->head = node->next;
+      } else {
+        l_list->head = NULL;
+      }
+    }
+    l_list->size--;
+    remove_count++;
+    free(node);
   }
-  if (node->next) {
-    node->next->prev = node->prev;
-  }
-  l_list->size--;
-  free(node);
+  return remove_count;
 }
 
 void list_free (list *l_list) {

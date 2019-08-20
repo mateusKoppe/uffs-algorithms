@@ -29,7 +29,6 @@ void listsort_swap_next_node (list *l_list, list_node *n) {
   }
 }
 
-/* WARNING: NOT TESTED FUNCTION */
 void listsort_swap_node (list *l_list, list_node *n1, list_node *n2) {
   if (n1->next == n2) {
     listsort_swap_next_node(l_list, n1);
@@ -105,7 +104,6 @@ void listsort_selection_sort (list *l_list) {
     int swapped = 0; 
     list_node *lowest_node = fetch_node;
     list_node *j_node = fetch_node;
-    printf("f->%d l->%d\n", fetch_node->value, lowest_node->value); 
     while (j_node) {
       if (lowest_node->value > j_node->value) {
         swapped = 1;
@@ -113,11 +111,9 @@ void listsort_selection_sort (list *l_list) {
       }
       j_node = j_node->next;
     }
-    printf("f->%d l->%d\n", fetch_node->value, lowest_node->value);
     if (swapped) {
       listsort_swap_node(l_list, fetch_node, lowest_node);
     }
-    list_print(l_list);
     fetch_node = next_node;
   }
 }

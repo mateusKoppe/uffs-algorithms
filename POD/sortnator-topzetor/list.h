@@ -17,7 +17,7 @@ list_node* list_get_node (list *l_list, int value);
 list_node* list_get_last_node (list *l_list);
 list_node* list_insert (list *l_list, int value);
 void list_print (list *l_list);
-void list_remove (list *l_list, int value);
+int list_remove (list *l_list, int value);
 void list_free (list *l_list);
 
 #endif
