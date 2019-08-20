@@ -28,7 +28,8 @@ void view () {
   printf("[3] - Show list\n");
   printf("[4] - Show list size\n");
   printf("[5] - Order (Bubble Sort)\n");
-  printf("[6] - Quit\n");
+  printf("[6] - Order (Selection Sort)\n");
+  printf("[7] - Quit\n");
   menu();
 }
 
@@ -83,6 +84,10 @@ void menu () {
       view();
       break;
     case 6:
+      listsort_selection_sort(&number_list);
+      view();
+      break;
+    case 7:
       list_free(&number_list);
       break;
     default:
