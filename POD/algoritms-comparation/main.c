@@ -27,39 +27,42 @@ int shell_sort(int values[], int length) {
   return iterations;
 }
 
-void _quick_sort_swap (int *i, int *j) {
-  int aux = *i;
-  *i = *j;
-  *j = aux;
-}
+int _quick_sort(int number[], int first, int last) {
+  int i, j, pivot, temp;
+  int iterations = 0;
 
-int _quick_sort_partition (int values[], int low, int high) {
-  int pivot = values[high];
-  int i = (low - 1);
+  if(first < last){
+    pivot = first;
+    i = first;
+    j = last;
 
-  for (int j = low; j <= high - 1; j++) { 
-    if (values[j] < pivot) {
-      i++;
-      _quick_sort_swap(&values[i], &values[j]);
+    while(i < j){
+      while(number[i] <= number[pivot] && i<last) {
+        i++;
+        iterations++;
+      }
+      while(number[j] > number[pivot]) {
+        j--;
+        iterations++;
+      }
+      if(i<j){
+        temp = number[i];
+        number[i] = number[j];
+        number[j] = temp;
+      }
     }
+
+    temp = number[pivot];
+    number[pivot] = number[j];
+    number[j] = temp;
+    iterations = iterations + _quick_sort(number, first, j-1);
+    iterations = iterations + _quick_sort(number, j+1, last);
   }
-
-  _quick_sort_swap(&values[i + 1], &values[high]);
-  return (i + 1);
-}
-
-void _quick_sort (int values[], int low, int high) {
-  if (low < high) {
-    int pi = _quick_sort_partition(values, low, high);
-
-    _quick_sort(values, low, pi - 1);
-    _quick_sort(values, pi + 1, high);
-  }
+  return iterations;
 }
 
 int quick_sort (int values[], int lenght) {
-  _quick_sort(values, 0, lenght-1);
-  return 1;
+  return _quick_sort(values, 0, lenght-1);
 }
 
 void array_print (int array[], int size) {
