@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+void concat_files_into (FILE* file1, FILE* file2, FILE* result);
+
 int main () {
   char filename[20];
 
@@ -24,22 +26,22 @@ int main () {
 
   FILE* file_result = fopen(filename, "w");
   
-  char line[256];
-  int lines = 1, size = 0;
-  while (fgets(line, 256, file1) != NULL) {
-    fprintf(file_result, "%s", line);
-  }
+  concat_files_into(file1, file2, file_result);
 
   fclose(file1);
-
-  fprintf(file_result, "%s", "\n");
-
-  while (fgets(line, 256, file2) != NULL) {
-    fprintf(file_result, "%s", line);
-  }
-  
   fclose(file2);
   fclose(file_result);
 
   return 0;
+}
+
+void concat_files_into (FILE* file1, FILE* file2, FILE* result) {
+  char line[256];
+  while (fgets(line, 256, file1) != NULL) {
+    fprintf(result, "%s", line);
+  }
+  fprintf(result, "%s", "\n");
+  while (fgets(line, 256, file2) != NULL) {
+    fprintf(result, "%s", line);
+  }
 }
