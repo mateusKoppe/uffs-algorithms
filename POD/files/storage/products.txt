@@ -1,0 +1,4 @@
+mouse 2 10.00
+keyboard 1 50.00
+chair 10 50.00
+pen 15 1.50
