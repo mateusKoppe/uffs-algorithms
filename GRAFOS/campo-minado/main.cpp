@@ -6,7 +6,8 @@
 using namespace std;
 
 struct field {
-    bool isBomb;
+    bool isBomb = false;
+    bool isOpened = false;
     int bombsAround = 0;
 };
 
@@ -30,17 +31,39 @@ class board {
         }
 
         void render () {
+            cout << "\n  ";
+
+            for (int i = 1; i <= columns; i++) {
+                cout << i << " ";
+            }
             cout << "\n";
             for (int y = 0; y < rows; y++) {
+                cout << y + 1 << " "; 
                 for (int x = 0; x < columns; x++) {
-                    if (fields[y][x].isBomb) {
-                        cout << "B ";    
-                    } else { 
-                        cout << fields[y][x].bombsAround << " ";
-                    }
+                    renderField(y, x);
                 }
                 cout << "\n";
             }
+        }
+
+        void start () {
+            generate();
+            render();
+            receiveInput();
+        }
+
+        void receiveInput () {
+            int targetX, targetY;
+            cout << "Enter the cordenate:\n"
+                << "x: ";
+            cin >> targetX;
+            cout << "y: ";
+            cin >> targetY;
+            targetY--;
+            targetX--;
+            openField(targetY, targetX);
+            render();
+            receiveInput();
         }
 
     private:
@@ -91,6 +114,31 @@ class board {
             }
             return bombsAround;
         }
+
+        void renderField (int y, int x) {
+            if (!fields[y][x].isOpened) {
+                cout << "= ";
+            } else if (fields[y][x].isBomb) {
+                cout << "B ";    
+            } else { 
+                cout << fields[y][x].bombsAround << " ";
+            }
+        }
+
+        void openField (int fieldY, int fieldX) {
+            fields[fieldY][fieldX].isOpened = true;
+            vector<int> range = {-1, 0, 1};
+            for (int y : range) {
+                for (int x : range) {
+                    int targetX = x + fieldX;
+                    int targetY = y + fieldY;
+                    if (targetY < 0 || targetX < 0 || targetY >= rows || targetX >= columns) continue;
+                    if ((y == x || y == x * -1)) continue;
+                    field *targetField = &fields[targetY][targetX];
+                    if (targetField->isBomb || targetField->isOpened) continue;
+                }
+            }
+        }
 };
 
 int main () {
@@ -103,6 +151,5 @@ int main () {
     cout << "Bombs: ";
     cin >> gameBoard.bombsAmount;
 
-    gameBoard.generate();
-    gameBoard.render();
+    gameBoard.start();
 }
