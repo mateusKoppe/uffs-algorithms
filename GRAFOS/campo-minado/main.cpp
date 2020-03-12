@@ -126,16 +126,21 @@ class board {
         }
 
         void openField (int fieldY, int fieldX) {
-            fields[fieldY][fieldX].isOpened = true;
+            field *actualField = &fields[fieldY][fieldX];
+            actualField->isOpened = true;
+            if (actualField->bombsAround != 0) return;
             vector<int> range = {-1, 0, 1};
             for (int y : range) {
                 for (int x : range) {
                     int targetX = x + fieldX;
                     int targetY = y + fieldY;
-                    if (targetY < 0 || targetX < 0 || targetY >= rows || targetX >= columns) continue;
-                    if ((y == x || y == x * -1)) continue;
+                    bool isOutside = targetY < 0 || targetX < 0 || targetY >= rows || targetX >= columns;
+                    bool isCenter = x == 0 && y == 0;
+                    bool isDiagonal = (y == x || y == x * -1) && !isCenter;
+                    if (isOutside || isDiagonal || isCenter) continue;
                     field *targetField = &fields[targetY][targetX];
                     if (targetField->isBomb || targetField->isOpened) continue;
+                    openField(targetY, targetX);
                 }
             }
         }
