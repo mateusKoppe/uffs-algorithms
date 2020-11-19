@@ -1,0 +1,113 @@
+	.globl main
+	
+	.data
+msg_menu_header:	    .string "\n -- List manager --\n"
+msg_menu_insert:	    .string "\t [1] Insert value\n"
+msg_menu_list:	    .string "\t [3] List values\n"
+msg_menu_exit:		    .string "\t [0] Exit\n"
+breakln:                    .string "\n"
+space:	                    .string " "
+
+	.text
+main:
+	nop
+	add s0, zero, sp    # pointer to start of the stack
+	
+menu:
+	la a0, msg_menu_header
+	jal print_str
+
+	la a0, msg_menu_insert
+	jal print_str
+	
+	la a0, msg_menu_list
+	jal print_str
+	
+	la a0, msg_menu_exit
+	jal print_str
+	
+	
+	jal read_int
+	
+	li t0, 0
+	beq  a0, t0, exit
+	
+	li t0, 1
+	beq  a0, t0, insert
+	
+	li t0, 3
+	beq  a0, t0, print_list
+
+	j menu
+
+
+#####
+# Insertion option
+#####
+
+insert:
+	jal read_int
+	beq s0, sp, _insert_first
+	j _insert_common
+
+_insert_first:
+	sw  a0, 0(sp)
+	sw  zero, -4(sp)
+	addi sp, sp, -8
+	j menu
+	
+_insert_common:
+	sw a0, 0(sp)         ## Write node value
+	lw t1, 4(sp)         ## Get prev node next pointer
+	sw t1, -4(sp)        ## Save prev node next pointer in this node next pointer
+	sw sp, 4(sp)         ## Save this node address in prev node next pointer
+	addi sp, sp, -8
+	j menu
+
+		
+#############
+# Print List#
+#############
+print_list:
+	add t0, zero, s0
+
+_list_loop:
+	beq t0, zero, menu
+	lw a0, 0(t0) 
+	jal print_int
+	jal print_space
+	lw t0, -4(t0)
+	j _list_loop
+
+###############################
+#    Helpers  Section         #
+###############################
+read_int:                  # label to read input from the user to a0
+	li a7, 5
+	ecall
+	ret
+
+print_str:                 # auxiliary function to print string loaded to a0
+	li a7, 4
+	ecall
+	ret
+	
+print_break_line:
+	la a0, breakln
+	li a7, 4
+	ecall
+	ret
+	
+print_space:
+	la a0, space
+	li a7, 4
+	ecall
+	ret
+
+print_int:
+	li a7, 1
+	ecall
+	ret
+
+exit:                     # exits
+
