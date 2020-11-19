@@ -34,7 +34,6 @@ menu:
 	la a0, msg_menu_exit
 	jal print_str
 	
-	
 	jal read_int
 	
 	li t0, 0
@@ -62,6 +61,9 @@ menu:
 insert:
 	jal read_int
 	beq s0, sp, _insert_first
+	lw t1, 0(s0)
+	blt a0, t1, _insert_unshift
+	add t0, zero, s0
 	j _insert_common
 
 _insert_first:
@@ -70,11 +72,27 @@ _insert_first:
 	addi sp, sp, -8
 	j menu
 	
+_insert_unshift:
+	add t1, zero, s0
+	sw  a0, 0(sp)
+	sw  t1, -4(sp)
+	add s0, zero, sp
+	addi sp, sp, -8
+	j menu
+	
 _insert_common:
-	sw a0, 0(sp)         ## Write node value
-	lw t1, 4(sp)         ## Get prev node next pointer
-	sw t1, -4(sp)        ## Save prev node next pointer in this node next pointer
-	sw sp, 4(sp)         ## Save this node address in prev node next pointer
+	lw t1, -4(t0)
+	beqz t1, _insert_node
+	lw t2, -0(t1)
+	blt a0, t2, _insert_node
+	add t0, zero, t1
+	j _insert_common
+	
+_insert_node:
+	lw t2, -4(t0)
+	sw  a0, 0(sp)
+	sw  t2, -4(sp)
+	sw  sp, -4(t0)
 	addi sp, sp, -8
 	j menu
 
