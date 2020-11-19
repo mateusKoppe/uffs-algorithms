@@ -1,12 +1,13 @@
 	.globl main
 	
 	.data
-msg_menu_header:	    .string "\n -- List manager --\n"
-msg_menu_insert:	    .string "\t [1] Insert value\n"
-msg_menu_list:	    .string "\t [3] List values\n"
-msg_menu_exit:		    .string "\t [0] Exit\n"
-breakln:                    .string "\n"
-space:	                    .string " "
+msg_menu_header:		.string "\n -- List manager --\n"
+msg_menu_insert:		.string "\t [1] Insert value\n"
+msg_menu_remove_value:		.string "\t [2] Remove by value\n"
+msg_menu_list:			.string "\t [3] List values\n"
+msg_menu_exit:			.string "\t [0] Exit\n"
+breakln:			.string "\n"
+space:				.string " "
 
 	.text
 main:
@@ -18,6 +19,9 @@ menu:
 	jal print_str
 
 	la a0, msg_menu_insert
+	jal print_str
+	
+	la a0, msg_menu_remove_value
 	jal print_str
 	
 	la a0, msg_menu_list
@@ -34,6 +38,9 @@ menu:
 	
 	li t0, 1
 	beq  a0, t0, insert
+	
+	li t0, 2
+	beq a0, t0, remove_value
 	
 	li t0, 3
 	beq  a0, t0, print_list
@@ -72,12 +79,47 @@ print_list:
 	add t0, zero, s0
 
 _list_loop:
-	beq t0, zero, menu
+	beqz t0, menu
 	lw a0, 0(t0) 
 	jal print_int
 	jal print_space
 	lw t0, -4(t0)
 	j _list_loop
+	
+############
+# Remove by value
+###########
+remove_value:
+	jal read_int
+	
+_remove_value_start:
+	beq s0, sp, menu
+	add t0, zero, s0
+	lw t1, 0(t0)
+	bne t1, a0, _remove_value_loop
+	lw t3, -4(t0)
+	add s0, zero, t3
+	beqz s0, _restore_stack
+	j _remove_value_start
+	
+_remove_value_loop:
+	lw t1, -4(t0)				 # Get next node
+	beqz t1, menu				 # if node is zero go back to menu
+	
+	lw t2, 0(t1)
+	
+	bne t2,  a0, _remove_value_loop_next 	 # If diferent next iteration
+	lw t3, -4(t1)
+	sw t3, -4(t0)
+	j _remove_value_loop
+	
+_remove_value_loop_next:
+	add t0, zero, t1
+	j _remove_value_loop
+
+_restore_stack:
+	add s0, zero, sp
+	j menu
 
 ###############################
 #    Helpers  Section         #
