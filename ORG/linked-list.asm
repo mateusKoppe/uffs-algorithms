@@ -4,7 +4,8 @@
 msg_menu_header:		.string "\n -- List manager --\n"
 msg_menu_insert:		.string "\t [1] Insert value\n"
 msg_menu_remove_value:		.string "\t [2] Remove by value\n"
-msg_menu_list:			.string "\t [3] List values\n"
+msg_menu_remove_index:		.string "\t [3] Remove by index\n"
+msg_menu_list:			.string "\t [4] List values\n"
 msg_menu_exit:			.string "\t [0] Exit\n"
 breakln:			.string "\n"
 space:				.string " "
@@ -22,6 +23,9 @@ menu:
 	jal print_str
 	
 	la a0, msg_menu_remove_value
+	jal print_str
+
+	la a0, msg_menu_remove_index
 	jal print_str
 	
 	la a0, msg_menu_list
@@ -43,6 +47,9 @@ menu:
 	beq a0, t0, remove_value
 	
 	li t0, 3
+	beq  a0, t0, remove_index
+	
+	li t0, 4
 	beq  a0, t0, print_list
 
 	j menu
@@ -120,6 +127,37 @@ _remove_value_loop_next:
 _restore_stack:
 	add s0, zero, sp
 	j menu
+
+
+###########################
+# Remove by index
+###########################
+remove_index:
+	jal read_int
+	li t1, 0
+	
+_remove_index_start:
+	beq s0, sp, menu
+	add t0, zero, s0
+	bne t1, a0, _remove_index_loop
+	lw t2, -4(t0)
+	add s0, zero, t2
+	beqz s0, _restore_stack
+	j menu
+	
+_remove_index_loop:
+	lw t2, -4(t0)				 # Get next node
+	beqz t2, menu				 # if node is zero go back to menu
+	addi t1, t1, 1
+	bne t1, a0, _remove_index_loop_next 	 # If diferent next iteration
+	
+	lw t3, -4(t2)
+	sw t3, -4(t0)
+	j _remove_index_loop
+
+_remove_index_loop_next:
+	add t0, zero, t2
+	j _remove_index_loop
 
 ###############################
 #    Helpers  Section         #
