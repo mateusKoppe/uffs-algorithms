@@ -1,3 +1,4 @@
+
 	.globl main
 	
 	.data
@@ -9,11 +10,15 @@ msg_menu_list:			.string "\t [4] List values\n"
 msg_menu_exit:			.string "\t [0] Exit\n"
 breakln:			.string "\n"
 space:				.string " "
+msg_number_inserted:            .string "\nNumber of items inserted: "
+msg_number_removed:             .string "\nNumber of items removed: "
 
 	.text
 main:
 	nop
 	add s0, zero, sp    # pointer to start of the stack
+	li s1, 0            # counter of how many items was inserted
+	li s2, 0            # counter of how many items was removed
 	
 menu:
 	la a0, msg_menu_header
@@ -70,6 +75,7 @@ _insert_first:
 	sw  a0, 0(sp)
 	sw  zero, -4(sp)
 	addi sp, sp, -8
+    addi s1, s1, 1
 	j menu
 	
 _insert_unshift:
@@ -78,6 +84,7 @@ _insert_unshift:
 	sw  t1, -4(sp)
 	add s0, zero, sp
 	addi sp, sp, -8
+    addi s1, s1, 1
 	j menu
 	
 _insert_common:
@@ -94,6 +101,7 @@ _insert_node:
 	sw  t2, -4(sp)
 	sw  sp, -4(t0)
 	addi sp, sp, -8
+    addi s1, s1, 1
 	j menu
 
 		
@@ -124,6 +132,7 @@ _remove_value_start:
 	bne t1, a0, _remove_value_loop
 	lw t3, -4(t0)
 	add s0, zero, t3
+	addi s2, s2, 1
 	beqz s0, _restore_stack
 	j _remove_value_start
 	
@@ -136,6 +145,7 @@ _remove_value_loop:
 	bne t2,  a0, _remove_value_loop_next 	 # If diferent next iteration
 	lw t3, -4(t1)
 	sw t3, -4(t0)
+    addi s2, s2, 1
 	j _remove_value_loop
 	
 _remove_value_loop_next:
@@ -160,6 +170,7 @@ _remove_index_start:
 	bne t1, a0, _remove_index_loop
 	lw t2, -4(t0)
 	add s0, zero, t2
+	addi s2, s2, 1
 	beqz s0, _restore_stack
 	j menu
 	
@@ -171,11 +182,28 @@ _remove_index_loop:
 	
 	lw t3, -4(t2)
 	sw t3, -4(t0)
-	j _remove_index_loop
+	addi s2, s2, 1
+	j menu
 
 _remove_index_loop_next:
 	add t0, zero, t2
 	j _remove_index_loop
+
+##########################	
+#      Exit Section      #	
+##########################
+exit:                     
+	la a0, msg_number_inserted
+	jal print_str
+	add a0, zero, s1
+	jal print_int
+	la a0, msg_number_removed
+	jal print_str
+	add a0, zero, s2
+	jal print_int
+	jal print_break_line
+	li a7, 10
+	ecall
 
 ###############################
 #    Helpers  Section         #
@@ -206,6 +234,4 @@ print_int:
 	li a7, 1
 	ecall
 	ret
-
-exit:                     # exits
 
