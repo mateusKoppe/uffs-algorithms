@@ -1,3 +1,6 @@
+## Alunos:
+## Amadeus Dabela - 1621101005
+## Mateus Koppe - 1821101023
 
 	.globl main
 	
@@ -234,4 +237,3 @@ print_int:
 	li a7, 1
 	ecall
 	ret
-
