@@ -13,8 +13,12 @@ msg_menu_list:			.string "\t [4] List values\n"
 msg_menu_exit:			.string "\t [0] Exit\n"
 breakln:			.string "\n"
 space:				.string " "
-msg_number_inserted:            .string "\nNumber of items inserted: "
-msg_number_removed:             .string "\nNumber of items removed: "
+
+msg_menu_created_item_index:		.string "\ncreated in index:"
+msg_menu_removed_item_index:		.string "\nremoved in index:"
+msg_menu_removed_item_value:		.string "\nremoved in value:"
+msg_number_inserted:            .string "\nnumber of items inserted:"
+msg_number_removed:             .string "\nnumber of items removed:"
 
 	.text
 main:
@@ -22,10 +26,10 @@ main:
 
 	add s0, zero, sp    # pointer to head of the linked list
 	li t0, 0
-	sw t0 0(sp) 
-	addi sp, sp, -4
-	li s1, 0            # counter of how many items was inserted
-	li s2, 0            # counter of how many items was removed
+	sw t0 0(sp)
+	sw t0 -4(sp) 		## Inserted items
+	sw t0 -8(sp) 		## Removed items
+	addi sp, sp, -12
 	
 menu:
 	la a0, msg_menu_header
@@ -74,6 +78,11 @@ menu_insert:
 	add a1 zero a0
 	add a0 zero s0
 	jal lkdlist_insert
+	add t0 zero a0
+	la a0, msg_menu_created_item_index
+	jal print_str
+	add a0 zero t0
+	jal print_int
 	j menu
 
 menu_remove_value:
@@ -81,6 +90,11 @@ menu_remove_value:
 	add a1 zero a0
 	add a0 zero s0
 	jal lkdlist_remove_value
+	add t0 zero a0
+	la a0, msg_menu_removed_item_index
+	jal print_str
+	add a0 zero t0
+	jal print_int
 	j menu
 
 menu_remove_index:
@@ -88,6 +102,11 @@ menu_remove_index:
 	add a1 zero a0
 	add a0 zero s0
 	jal lkdlist_remove_index
+	add t0 zero a0
+	la a0, msg_menu_removed_item_value
+	jal print_str
+	add a0 zero t0
+	jal print_int
 	j menu
 
 menu_print_list:
@@ -98,11 +117,11 @@ menu_print_list:
 menu_exit:                     
 	la a0, msg_number_inserted
 	jal print_str
-	add a0, zero, s1
+	lw a0, -4(s0)
 	jal print_int
 	la a0, msg_number_removed
 	jal print_str
-	add a0, zero, s2
+	lw a0, -8(s0)
 	jal print_int
 	jal print_break_line
 	li a7, 10
@@ -117,50 +136,57 @@ menu_exit:
 # Receives:
 # - a0 -> linked list
 # - a1 -> value to insert
+#
+# Returns:
+# - a0 -> added items index
 lkdlist_insert:
+	li t4 0 
 	lw t0, 0(a0)
-	beqz t0, _lkdlist_insert_first
+	beqz t0, _lkdlist_insert_head
 	lw t1, 0(t0)
-	blt a1, t1, _lkdlist_insert_unshift
-	j _lkdlist_insert_common
+	blt a1, t1, _lkdlist_insert_head
+	j _lkdlist_insert_loop
 
-_lkdlist_insert_first:
-	sw a1, 0(sp)
-	sw zero, -4(sp)
-	sw sp 0(a0)
-	addi sp, sp, -8
-	addi s1, s1, 1
-	ret
-	
-_lkdlist_insert_unshift:
+_lkdlist_insert_head:
 	lw t1, 0(a0)
 	sw a1, 0(sp)
 	sw t1, -4(sp)
 	sw sp 0(a0)
-	add a0, zero, sp
 	addi sp, sp, -8
-	addi s1, s1, 1
+
+	lw t0 -4(a0)
+	addi t0, t0, 1
+	sw t0 -4(a0)
+
+	add a0 zero t4
 	ret
 	
-_lkdlist_insert_common:
+_lkdlist_insert_loop:
+	addi t4 t4 1
 	lw t1, -4(t0)
 	beqz t1, _lkdlist_insert_node
 	lw t2, -0(t1)
 	blt a1, t2, _lkdlist_insert_node
 	add t0, zero, t1
-	j _lkdlist_insert_common
+	j _lkdlist_insert_loop
 	
 _lkdlist_insert_node:
-	lw t2, -4(t0)
+	lw t1, -4(t0)
 	sw a1, 0(sp)
-	sw t2, -4(sp)
+	sw t1, -4(sp)
 	sw sp, -4(t0)
 	addi sp, sp, -8
-	addi s1, s1, 1
-	ret
 
+	lw t0 -4(a0)
+	addi t0, t0, 1
+	sw t0 -4(a0)
+	
+	add a0 zero t4
+	ret
 		
-# Print
+## Print
+# Receives:
+# - a0 -> linked list
 lkdlist_print:
 	lw t0, 0(a0)
 	add t6, zero, ra                  # Save return address
@@ -181,17 +207,25 @@ _lkdlist_print_finish:
 # Receives:
 # - a0 -> linked list
 # - a1 -> value to remove
+#
+# Returns:
+# - a0 -> removed index
 lkdlist_remove_value:
+	li t4, 0
 	lw t0, 0(a0)
 	beqz t0, _lkdlist_remove_value_return
 	lw t1, 0(t0)
 	bne t1, a1, _lkdlist_remove_value_loop
 	lw t1, -4(t0)
 	sw t1, 0(a0) 
-	addi s2, s2, 1
+	lw t0 -8(a0)
+	addi t0, t0, 1
+	sw t0 -8(a0)
+	add a0, zero, t4
 	ret
 	
 _lkdlist_remove_value_loop:
+	addi t4, t4, 1
 	lw t1, -4(t0)				          # Get next node
 	beqz t1, _lkdlist_remove_value_return # if node is zero go back to menu
 	
@@ -200,7 +234,10 @@ _lkdlist_remove_value_loop:
 	bne t2, a1, _lkdlist_remove_value_loop_next 	 # If diferent next iteration
 	lw t3, -4(t1)
 	sw t3, -4(t0)
-	addi s2, s2, 1
+	lw t0 -8(a0)
+	addi t0, t0, 1
+	sw t0 -8(a0)
+	add a0, zero, t4
 	ret
 	
 _lkdlist_remove_value_loop_next:
@@ -208,12 +245,16 @@ _lkdlist_remove_value_loop_next:
 	j _lkdlist_remove_value_loop
 
 _lkdlist_remove_value_return:
+	addi a0, zero, -1
 	ret
 
 ## Remove by index
 # Receives:
 # - a0 -> linked list
 # - a1 -> index to remove
+#
+# Returns:
+# - a0 -> removed value
 lkdlist_remove_index:
 	li t4, 0
 	
@@ -221,9 +262,13 @@ _lkdlist_remove_index_start:
 	lw t0 0(a0)
 	beqz t0, _lkdlist_remove_index_return
 	bne t4, a1, _lkdlist_remove_index_loop
+	lw t3 0(t0) 
 	lw t1, -4(t0)
 	sw t1, 0(a0)
-	addi s2, s2, 1
+	lw t0 -8(a0)
+	addi t0, t0, 1
+	sw t0 -8(a0)
+	add a0 zero t3
 	ret
 	
 _lkdlist_remove_index_loop:
@@ -232,9 +277,13 @@ _lkdlist_remove_index_loop:
 	addi t4, t4, 1
 	bne t4, a1, _lkdlist_remove_index_loop_next 	 # If diferent next iteration
 	
+	lw t3 0(t1)
 	lw t2, -4(t1)
 	sw t2, -4(t0)
-	addi s2, s2, 1
+	lw t0 -8(a0)
+	addi t0, t0, 1
+	sw t0 -8(a0)
+	add a0 zero t3
 	ret
 
 _lkdlist_remove_index_loop_next:
@@ -242,6 +291,7 @@ _lkdlist_remove_index_loop_next:
 	j _lkdlist_remove_index_loop
 
 _lkdlist_remove_index_return:
+	addi a0 zero -1
 	ret
 
 ###############################
